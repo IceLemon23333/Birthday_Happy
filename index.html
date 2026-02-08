@@ -1,0 +1,207 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>给你的生日小网站</title>
+
+    <style>
+        .type.typing::after {
+            content: "▌";
+            animation: blink 1s infinite;
+            margin-left: 2px;
+        }
+        @keyframes blink {
+            0%, 50% {
+                opacity: 1;
+            }
+            51%, 100% {
+                opacity: 0;
+            }
+        }
+        .heart {
+            position:fixed;
+            font-size: 20px;
+            pointer-events: none;
+
+            animation: floatUp 1.5s ease-out forwards;
+        }
+        @keyframes floatUp {
+            0% {
+                transform: translateY(0) scale(2);
+                opacity: 1;
+            }
+            100% {
+                transform: translateY(-100px) scale(0.1);
+                opacity: 0;
+            }
+        }
+        body {
+            margin: 0;
+            min-height: 100vh;
+
+            display: flex;
+            justify-content: center;
+            align-items: center;
+
+            background: linear-gradient(
+                120deg,
+                #0f122a,
+                #1e3a8a,
+                #7c3aed,
+                #0f172a
+            );
+            background-size: 400% 400%;
+            animation: bgFlow 15s ease infinite;
+            font-family: "Microsoft YaHei", "PingFang SC", "Noto Sans SC", sans-serif;
+        }
+        @keyframes bgFlow {
+            0% {
+                background-position: 0% 50%;
+            }
+            50% {
+                background-position: 100% 50%;
+            }
+            100% {
+                background-position: 0% 50%;
+            }
+        }
+        .card {
+            background-color: rgba(90, 20, 60, 0.55);
+            backdrop-filter: blur(10px);
+            
+            animation: bgFlow 10s ease infinite;
+
+            color: white;
+            padding: 32px 28px;
+            border-radius: 16px;
+
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.4);
+            linear-gradient(120deg, #0ea5e9, #22c55e, #a855f7, #0ea5e9);
+
+
+            width: 100%;
+            max-width: 360px;
+        }
+        .card h1 {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+        .card p {
+            line-height: 1.8;
+            margin: 12px 0;
+        }
+        .sign {
+            text-align: right;
+            opacity: 0.8;
+            /* 字体颜色深浅 */
+        }
+        @keyframes breathe{
+            0%,100% {
+                transform: scale(1);
+            }
+            50% {
+                transform: scale(1.015);
+            }
+        }
+        .card.breathing{
+            animation: breathe 6s ease-in-out infinite;
+        }
+    </style>
+</head>
+<body>
+    
+    <div class="card">
+        <h1>🎂 生日快乐！ 🎂</h1>
+        <p class="type" data-text="第一句话"></p>
+        <p class="type" data-text="第二句话"></p>
+        <p class="type" data-text="第三句话"></p>
+        <p class="sign">——Z·H·N</p>
+    </div><button id="musicBtn" style="
+        position: fixed;
+        bottom:16px;
+        right:16px;
+        background:none;
+        border:none;
+        font-size: 20px;
+        cursor: pointer;
+        color: white;">点我->🎵</button>
+    <audio id="bgMusic" loop>
+        <source src="music1.mp3" type="audio/mpeg">
+    </audio>
+
+    <script>
+        const btn=document.getElementById('musicBtn');
+        const bgm=document.getElementById('bgMusic');
+        let isPlaying=false;
+        bgm.volume=0.4;
+
+        btn.onclick=()=>{
+            if(isPlaying){
+                bgm.pause();
+                btn.innerText='🎵';
+            }else{
+                bgm.play();
+                btn.innerText='🔈';
+            }
+            isPlaying=!isPlaying;
+        };
+    </script>
+    <script>
+        const emojis = ['💖','✨','💗','🌸','⭐'];
+
+        document.addEventListener('click', function (e) {
+            const heart = document.createElement('div');
+            heart.className = 'heart';
+            heart.innerText = emojis[Math.floor(Math.random() * emojis.length)];
+
+            heart.style.fontSize = (Math.random() * 10 + 15) + 'px';
+            heart.style.transform = 'translateX(' + (Math.random() * 40 - 0) + 'px)';
+            heart.style.left = e.clientX + 'px';
+            heart.style.top = e.clientY + 'px';
+
+            document.body.appendChild(heart);
+
+            setTimeout(() => {
+                heart.remove();
+            }, 1500);
+        });
+        
+    </script>
+    <script>
+        const lines=document.querySelectorAll('.type');
+        let lineIndex=0;
+
+        function typeLine(element,text,speed=80){
+            element.classList.add('typing');
+            let charIndex=0;
+            function typeChar(){
+                if(charIndex<text.length){
+                    element.innerText+=text.charAt(charIndex);
+                    charIndex++;
+                    setTimeout(typeChar,speed);
+                }else{
+                    element.classList.remove('typing');
+                    lineIndex++;
+                    if(lineIndex<lines.length){
+                        setTimeout(startTyping,500);
+                    }else{
+                        setTimeout(()=>{
+                            document.querySelector('.card').classList.add('breathing');
+                        },1000);
+                    }
+                }
+            }
+            typeChar();
+        }
+
+        function startTyping(){
+            const current=lines[lineIndex];
+            const text = current.dataset.text;
+            typeLine(current,text,60);
+        }
+
+        startTyping();
+    </script>
+</body>
+</html>
