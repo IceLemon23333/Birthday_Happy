@@ -46,10 +46,10 @@
 
             background: linear-gradient(
                 120deg,
-                #0f122a,
-                #1e3a8a,
+                #8f2117,
                 #7c3aed,
-                #0f172a
+                #1e3a8a,
+                #9a11a9
             );
             background-size: 400% 400%;
             animation: bgFlow 15s ease infinite;
@@ -67,28 +67,70 @@
             }
         }
         .card {
-            background-color: rgba(90, 20, 60, 0.55);
+            background-color: rgba(164, 10, 230, 0.55);
             backdrop-filter: blur(10px);
             
             animation: bgFlow 10s ease infinite;
 
             color: white;
-            padding: 32px 28px;
-            border-radius: 16px;
+            padding: 12px 12px;
+            border-radius: 12px;
 
-            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.4);
-            linear-gradient(120deg, #0ea5e9, #22c55e, #a855f7, #0ea5e9);
+            background: linear-gradient(120deg,#0ea5e9,#22c55e,#a855f7);
 
-
+            width: 320px;
+            height: 400px;
+            perspective:1000px;
+            max-width: 240px;
+        }
+        .card-inner {
+            position: relative;
             width: 100%;
-            max-width: 360px;
+            min-height: 400px;
+            height: 100%;
+            text-align: center;
+            transition: transform 0.8s ease;
+            transform-style: preserve-3d;
+        }
+        .card:hover .card-inner {
+            transform: rotateY(180deg);
+        }
+        .card-front, .card-back {
+            position: absolute;
+            width: 100%;
+            min-height: 200px;
+            height: 100%;
+            backface-visibility: hidden;
+            border-radius: 16px;
+            padding: 20px;
+            box-sizing: border-box;
+            align-items: center;
+            justify-content: center;
+            display: flex;
+        }
+        .card-front{
+            background: linear-gradient(135deg,#ffdee9,#b5fffc);
+        }
+        .card-back {
+            height: 400px;
+            display: flex;
+            align-items: center;
+            max-height: 60vh;
+            overflow-y: auto;
+            background: linear-gradient(135deg, #cdb4db, #ffc8dd);
+            transform: rotateY(180deg);
+            flex-direction: column;
+            justify-content: flex-start;
+            padding-top: 20px;
         }
         .card h1 {
             text-align: center;
-            margin-bottom: 20px;
+            margin-top: 30px;
+            font-size: 24px;
+            line-height: 1.6;
         }
         .card p {
-            line-height: 1.8;
+            line-height: 1.4;
             margin: 12px 0;
         }
         .sign {
@@ -107,16 +149,44 @@
         .card.breathing{
             animation: breathe 6s ease-in-out infinite;
         }
+        .card.flip .card-inner{
+            transform: rotateY(180deg);
+        }
+        .big{
+            font-size: 32px;
+            font-weight: bold;
+        }
+        .medium{
+            font-size: 18px;
+            font-weight: bold;
+        }
+        .color1{
+            color:#c8a7db;
+        }
     </style>
 </head>
 <body>
     
     <div class="card">
-        <h1>🎂 生日快乐！ 🎂</h1>
-        <p class="type" data-text="第一句话"></p>
-        <p class="type" data-text="第二句话"></p>
-        <p class="type" data-text="第三句话"></p>
-        <p class="sign">——Z·H·N</p>
+        <div class="card-inner">
+            <div class="card-front">
+                <p class="medium color1">🎀<br>先点右下角音乐<br>再点击卡片翻转<br>🎁</p>
+            </div>
+
+            <div class="card-back">
+                <h1>🎂 热烈庆贺 🎂<br><span class="big">郭 梅 婷 同 学</span><br>🎂 生日快乐! 🎂</h1>
+                <p class="type medium" data-text="生日快乐鸭!今天可是你一生只有一次的成年生日"></p>
+                <p class="type medium" data-text="虽然咱小梅梅打初中就有超越同龄人的责任感和成熟气质"></p>
+                <p class="type medium" data-text="[看在今天是你生日的份上承认你比我成熟(只限今天)(￣へ￣)]"></p>
+                <p class="type medium" data-text="也在高中未成年时就早早地经历过一次成人礼"></p>
+                <p class="type medium" data-text="但今天依然是你人生中一个重要的里程碑"></p>
+                <p class="type medium" data-text="May you not be more timid than when you were a youth."></p>
+                <p class="type medium" data-text="May you be more optimistic than when you were a child."></p>
+                <p class="type medium" data-text="Happy birthday,my dear friend!"></p>
+                <p class="type medium" data-text="(点击屏幕有特效)">♪(＾∀＾●)ﾉ<br></p>
+                <p class="sign">——Z·H·N</p>
+            </div>
+        </div>
     </div><button id="musicBtn" style="
         position: fixed;
         bottom:16px;
@@ -125,9 +195,9 @@
         border:none;
         font-size: 20px;
         cursor: pointer;
-        color: white;">点我->🎵</button>
+        color: white;" class="big">点我->🎵</button>
     <audio id="bgMusic" loop>
-        <source src="music1.mp3" type="audio/mpeg">
+        <source src="music2.mp3" type="audio/mpeg">
     </audio>
 
     <script>
@@ -171,13 +241,14 @@
     <script>
         const lines=document.querySelectorAll('.type');
         let lineIndex=0;
+        let hasTyped=false;
 
         function typeLine(element,text,speed=80){
             element.classList.add('typing');
             let charIndex=0;
             function typeChar(){
                 if(charIndex<text.length){
-                    element.innerText+=text.charAt(charIndex);
+                    element.innerHTML+=text.charAt(charIndex);
                     charIndex++;
                     setTimeout(typeChar,speed);
                 }else{
@@ -201,7 +272,17 @@
             typeLine(current,text,60);
         }
 
-        startTyping();
+    </script>
+    <script>
+        const card=document.querySelector('.card');
+        card.addEventListener('click',()=>{
+            if(card.classList.toggle('flip')&&!hasTyped){
+                hasTyped=true;
+                setTimeout(()=>{
+                    startTyping();
+                },800);
+            }
+        });
     </script>
 </body>
 </html>
